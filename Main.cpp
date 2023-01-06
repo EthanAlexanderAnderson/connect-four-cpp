@@ -29,6 +29,15 @@ void dropChip(char board[][7], int turn, int selected) {
     }
 }
 
+void undoDrop(char board[][7], int selected) {
+    for (int i = 0; i < 7; i++) {
+        if (board[i][selected] == 'O' || board[i][selected] == 'X') {
+            board[i][selected] = '_';
+            return;
+        }
+    }
+}
+
 int swapTurn(int turn) {
     if (turn == 0) {
         return 1;
@@ -187,9 +196,24 @@ int main() {
         std::cout << "Choose column to drop chip (0-6): ";
         std::cin >> selected;
 
+        // drop players chip
         dropChip(board, turn, selected);
+
+        // drop CPU chip
         turn = swapTurn(turn);
         selected = rand()%7;
+
+        // look for possible win
+        for (int i = 0; i < 6; i++) {
+            dropChip(board, turn, i);
+            winner = winCheck(board);
+            undoDrop(board, i);
+
+            if (winner == 1) {
+                selected = i;
+                i = 7;
+            }
+        }
         dropChip(board, turn, selected);
         turn = swapTurn(turn);
 
