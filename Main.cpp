@@ -89,7 +89,75 @@ int winCheck(char board[][7]) {
         Oc = 0;
         Xc = 0;
     }
-    
+    // Check descending diagonal win
+    for (int n = 0; n < 7; n++) {
+        //std::cout << "\n";
+        int i = 3 - n;
+        int j = 0;
+        int temp = 0;
+        if ( i < 0 ) {
+            i = 0;
+            j += (n-3);
+        }
+        
+        while ((i + temp) < 7 && (j + temp) < 7) {
+            //std::cout << "[" << (i+temp) << "][" << (j+temp) << "] ";
+            if (board[i + temp][j + temp] == 'O') {
+                Oc++;
+                Xc = 0;
+                if (Oc == 4) {
+                    return 0;
+                }
+            } else if (board[i + temp][j + temp] == 'X') {
+                Xc++;
+                Oc = 0;
+                if (Xc == 4) {
+                    return 1;
+                }
+            } else {
+                Oc = 0;
+                Xc = 0;
+            }
+            temp++;
+        }
+        Oc = 0;
+        Xc = 0;
+    }
+
+    // Check ascending diagonal win
+    for (int n = 0; n < 7; n++) {
+        //std::cout << "\n";
+        int i = 3 + n;
+        int j = 0;
+        int temp = 0;
+        if ( i > 6 ) {
+            i = 6;
+            j += (n-3);
+        }
+        while (i - temp >= 0 && j + temp < 7) {
+            //std::cout << "[" << (i-temp) << "][" << (j+temp) << "] ";
+            if (board[i - temp][j + temp] == 'O') {
+                Oc++;
+                Xc = 0;
+                if (Oc == 4) {
+                    return 0;
+                }
+            } else if (board[i - temp][j + temp] == 'X') {
+                Xc++;
+                Oc = 0;
+                if (Xc == 4) {
+                    return 1;
+                }
+            } else {
+                Oc = 0;
+                Xc = 0;
+            }
+            temp++;
+        }
+        Oc = 0;
+        Xc = 0;
+    }
+
     return -1;
 }
 
