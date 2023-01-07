@@ -175,7 +175,7 @@ int main() {
     // Initialize variables
     char board [7][7]; // [row] [column]
     int selected = 0;
-    int winner = -1;
+    int winner = -1; // 0 = player, 1 = CPU
     int turn = 0; // 0 = player, 1 = CPU
     std::srand( std::time(0) );
 
@@ -199,13 +199,13 @@ int main() {
         // drop players chip
         dropChip(board, turn, selected);
 
-        // drop CPU chip
+        // swap turn
         turn = swapTurn(turn);
         selected = rand()%7;
 
-        // look for possible win
-        for (int i = 0; i < 6; i++) {
-            dropChip(board, turn, i);
+        // look for possible CPU win
+        for (int i = 0; i < 7; i++) {
+            dropChip(board, 1, i);
             winner = winCheck(board);
             undoDrop(board, i);
 
@@ -214,9 +214,34 @@ int main() {
                 i = 7;
             }
         }
+        
+        // look for a column that prevents a player win
+        if (winner != 1) {
+            int temp = 0;
+            for (int i = 0; i < 7; i++) {
+                dropChip(board, 1, (i + selected)%7); // random  CPU drop
+                for (int j = 0; j < 7; j++) { // test all following player moves
+                    dropChip(board, 0, j);
+                    winner = winCheck(board);
+                    undoDrop(board, j);
+                    if (winner == 0) { // if player can win, stop inner loop
+                        j = 99;
+                    }
+                    temp = j;
+                }
+                undoDrop(board, (i + selected)%7);
+                if (temp < 10) { // if player can't win, stop outer loop
+                    selected = (i + selected)%7;
+                    i = 99;
+                }
+            }
+        }
+
+        // drop CPU chip
         dropChip(board, turn, selected);
         turn = swapTurn(turn);
 
+        // end round (print board and winner)
         printBoard(board);
 
         winner = winCheck(board);
